@@ -20,7 +20,7 @@ def copy_environment(name: str):
 
 
 class Instance:
-    def __init__(self, *, code: str, remove_on_exit: bool = True):
+    def __init__(self, code: str, *, remove_on_exit: bool = True):
         self.name = str(uuid.uuid4())
         copy_environment(self.name)
         create_directories(self.name)
