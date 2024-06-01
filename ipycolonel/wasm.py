@@ -33,7 +33,7 @@ class WASMRuntime:
 
         self.store = Store(self.linker.engine, self.config)
 
-        self.store.set_fuel(400_000_000)
+        self.store.set_fuel(10_000_000_000)
         self.store.set_wasi(self.config)
         self.instance = self.linker.instantiate(self.store, self.python_module)
 
