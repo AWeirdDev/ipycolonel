@@ -7,11 +7,8 @@ This project is still in beta, the ecosystem isn't yet complete.
 # tag: beta
 from ipycolonel import Instance
 
-instance = Instance("print('Hello, World!')")
-print(instance.run())
+instance = Instance()
+print(instance.run("print('bob the building, hes a building!')"))
+print(instance.run("import math;print('whats this', math.pi)"))
 # { 'stdout': 'Hello, World!\n', 'stderr': '' }
 ```
-
-## Environment
-
-Create an environment in `ipycolonel-environment/`. This will be copied to new notebooks (`.ipycolonel/`).
