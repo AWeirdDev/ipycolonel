@@ -20,11 +20,11 @@ def copy_environment(name: str):
 
 
 class Instance:
-    def __init__(self, code: str, *, remove_on_exit: bool = True):
+    def __init__(self, *, remove_on_exit: bool = True):
         self.name = str(uuid.uuid4())
         copy_environment(self.name)
         create_directories(self.name)
-        self.runtime = WASMRuntime().init(code, name=self.name)
+        self.runtime = WASMRuntime()
 
         if remove_on_exit:
             atexit.register(self.handle_exit)
@@ -41,7 +41,8 @@ class Instance:
 
         return contents
 
-    def run(self):
+    def run(self, *, code: str):
+        self.runtime = self.runtime.init(code, name=self.name)
         try:
             self.runtime.exec()
         except ExitTrap:

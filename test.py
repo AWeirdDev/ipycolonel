@@ -1,7 +1,7 @@
 from ipycolonel.sandbox import Instance
 
-instance = Instance(
-    code="""import protonbites
-print(protonbites)""", remove_on_exit=True
+instance = Instance(remove_on_exit=True)
+
+print(
+    instance.run(code="import math\nprint(math.pi)")
 )
-print(instance.run())
