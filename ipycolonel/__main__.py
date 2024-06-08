@@ -5,6 +5,9 @@ from typing import List, Sequence, Set, Tuple, Union
 
 import warnings
 
+from .venv import create_venv
+
+
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from pip._vendor import pkg_resources
@@ -19,7 +22,7 @@ def get_dist(
     name: str,
 ) -> Union[Tuple["pkg_resources.Distribution", None], Tuple[None, Err]]:
     dists = sorted(
-        pkg_resources.find_on_path(None, "./ipycolonel-environment"),
+        pkg_resources.find_on_path(None, "./ipycolonel-environment/packages"),
         key=lambda i: str(i),
     )
     for dist in dists:
@@ -60,8 +63,8 @@ def install(packages_or_flags: List[str]) -> int:
     print(f"● Installing {', '.join(pkgs_shortened)} \n")
 
     return os.system(
-        "pip install --target=ipycolonel-environment --upgrade "
-        + "--platform=linux_x86_64 --no-deps --prefer-binary "
+        "pip install --target=ipycolonel-environment/packages --upgrade "
+        + "--platform=wasi-wasm32 --no-deps --prefer-binary "
         + " ".join(packages_or_flags)
     )
 
@@ -97,7 +100,7 @@ def remove(name: str):
         all_dirs.add(fn.split("/")[0])
 
         try:
-            os.remove(os.path.join("ipycolonel-environment", fn))
+            os.remove(os.path.join("ipycolonel-environment/packages", fn))
         except FileNotFoundError:
             continue
 
@@ -111,7 +114,7 @@ def remove(name: str):
     removed_dirs = set()
 
     for path in all_dirs:
-        path = os.path.join("ipycolonel-environment", path)
+        path = os.path.join("ipycolonel-environment/packages", path)
         if path in removed_dirs:
             continue
 
@@ -266,6 +269,48 @@ def main(args: List[str] = sys.argv[1:]) -> int:
                     remove(name)
             else:
                 print("Cancelled.")
+
+        return 0
+
+    elif command == "venv":
+        if not os.path.exists("ipycolonel-environment"):
+            print("error: ipycolonel venv: ipycolonel-environment was not found")
+            return 1
+
+        if not os.path.exists("ipycolonel-environment/venv"):
+            print("\nvenv: venv was not found in ipycolonel-environment/venv\n")
+            ans = input(" " * 6 + "Would you like to create one? [Yn] ")
+
+            if ans.strip().lower() in {"y", "yes"}:
+                print()
+                print(" " * 6 + "Working on it...", end="\r" + " " * 6)
+                create_venv()
+                print("created env in ipycolonel-environment/venv.")
+
+                ans = input(" " * 6 + "Prevent git from pushing? [Yn] ")
+                if ans.strip().lower() in {"y", "yes"}:
+                    with open("./ipycolonel-environment/venv/.gitignore", "wb") as f:
+                        f.write(b"*")
+
+                    print("\ndone.")
+
+            else:
+                print("\n🐣 the chick is angy about this (cancelled)\n")
+                return 1
+
+        sub = args[1] if len(args) > 1 else None
+
+        if not sub:
+            print("Usage: ipycolonel venv <subcommand>")
+            return 1
+
+        if sub == "activate":
+            if os.name == "nt":
+                print("For Windows NT, run:\n   .\\ipycolonel-environment\\venv\\Scripts\\activate")
+            else:
+                print("For Posix systems, run:\n    source ./ipycolonel-environment/venv/Scripts/activate")
+            
+            print("\n... if you're on an IDE, select the interpreter from the ipycolonel-environment/venv path.")
 
         return 0
 

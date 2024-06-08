@@ -1,7 +1,11 @@
-from ipycolonel.sandbox import Instance
+from ipycolonel import Instance
 
-instance = Instance(remove_on_exit=True)
+# Write your code here
+code = """\
+""".strip()
 
-print(
-    instance.run(code="import math\nprint(math.pi)")
-)
+instance = Instance(venv=False)
+result = instance.run(code=code)
+
+print("stdout:", result['stdout'], sep="\n")
+print("stderr:", result['stderr'], sep="\n")

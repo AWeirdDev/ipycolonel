@@ -3,7 +3,8 @@ from wasmtime import Config, Linker, Engine, Module, Store, WasiConfig
 
 
 class WASMRuntime:
-    def init(self, code: str, *, name: str) -> Self:
+    # THIS IS NOT THE __INIT__ FUNCTION!
+    def init(self, code: str, *, name: str, venv: bool = False) -> Self:
         self.engine_cfg = Config()
         self.engine_cfg.consume_fuel = True
         self.engine_cfg.cache = True
@@ -15,21 +16,34 @@ class WASMRuntime:
             self.linker.engine, open("python-3.12.0.wasm", "rb").read()
         )
 
+        self.venv = venv
         self.name = name
         self.set_argv(["python", "-c", code])
+
         return self
 
     def set_argv(self, argv: Iterable[str]):
         self.config = WasiConfig()
         self.config.argv = argv
-        self.config.stdout_file = (
-            "./.ipycolonel/" + self.name + "/.stdout"
-        )  # self.stdout
-        self.config.stderr_file = (
-            "./.ipycolonel/" + self.name + "/.stderr"
-        )  # self.stderr
-        # self.config.stdin_file = "./.ipycolonel/" + self.name + "/.stdin"
-        self.config.preopen_dir("./.ipycolonel/%s" % self.name, "./")
+        self.config.stdout_file = "./.ipycolonel/" + self.name + "/stdout"
+        self.config.stderr_file = "./.ipycolonel/" + self.name + "/stderr"
+
+        if not self.venv:
+            self.config.preopen_dir(
+                "./.ipycolonel/%s" % self.name,
+                "/usr/local/lib/python3.12/site-packages",
+            )
+        else:
+            self.config.preopen_dir(
+                "./.ipycolonel/%s/venv/Lib/site-packages" % self.name,
+                "/venv/lib/python3.12/site-packages",
+            )
+            self.config.env = [
+                ("PYTHONPATH", "/venv/lib/python3.12/site-packages")
+            ]
+
+        # self.config.preopen_dir("./.ipycolonel/%s/.ipycolonel" % self.name, "/dev")
+        self.config.inherit_env()
 
         self.store = Store(self.linker.engine, self.config)
 
