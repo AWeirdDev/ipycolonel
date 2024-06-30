@@ -8,9 +8,7 @@ This project is still in beta, the ecosystem isn't yet complete.
 from ipycolonel import Instance
 
 instance = Instance()
-print(instance.run("print('bob the building, hes a building!')"))
-print(instance.run("import math;print('whats this', math.pi)"))
-# { 'stdout': 'Hello, World!\n', 'stderr': '' }
+instance.run("code here")
 ```
 
 ***
