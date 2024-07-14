@@ -1,16 +1,5 @@
 # ipycolonel <kbd>beta</kbd>
 
-The IPython kernel alternative. Designed to be as lightweight as possible.
-This project is still in beta, the ecosystem isn't yet complete.
+[aweirddev.gitbook.io/ipycolonel](https://aweirddev.gitbook.io/ipycolonel)
 
-```python
-# tag: beta
-from ipycolonel import Instance
-
-instance = Instance()
-instance.run("code here")
-```
-
-***
-
-(c) 2024 AWeirdDev
+![image](https://github.com/user-attachments/assets/0cd4d51a-8387-4e95-9b90-3be9d7ddf67a)
